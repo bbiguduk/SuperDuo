@@ -1,6 +1,7 @@
 package it.jaschke.alexandria;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,6 +27,8 @@ import it.jaschke.alexandria.services.DownloadImage;
 
 public class BookDetail extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public final String LOG_TAG = BookDetail.class.getSimpleName();
+
     public static final String EAN_KEY = "EAN";
     private final int LOADER_ID = 10;
     private View rootView;
@@ -32,13 +36,18 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
     private String bookTitle;
     private ShareActionProvider shareActionProvider;
 
+    private Menu menu;
+
     public BookDetail(){
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        if(savedInstanceState == null) {
+            setHasOptionsMenu(true);
+            setRetainInstance(true);    // this line call onCreateOptionsMenu on screen rotation
+        }
     }
 
 
@@ -65,13 +74,15 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         return rootView;
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.book_detail, menu);
+        if(getActivity() instanceof MainActivity) {
+            Log.i(LOG_TAG, "onCreateOptionsMenu");
+            inflater.inflate(R.menu.book_detail, menu);
 
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+            MenuItem menuItem = menu.findItem(R.id.action_share);
+            shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        }
     }
 
     @Override
@@ -108,9 +119,14 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         ((TextView) rootView.findViewById(R.id.fullBookDesc)).setText(desc);
 
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
-        String[] authorsArr = authors.split(",");
-        ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
+        try {
+            String[] authorsArr = authors.split(",");
+            ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
+            ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",", "\n"));
+        } catch(NullPointerException e) {
+            e.printStackTrace();
+
+        }
         String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
         if(Patterns.WEB_URL.matcher(imgUrl).matches()){
             new DownloadImage((ImageView) rootView.findViewById(R.id.fullBookCover)).execute(imgUrl);
@@ -119,10 +135,6 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
 
         String categories = data.getString(data.getColumnIndex(AlexandriaContract.CategoryEntry.CATEGORY));
         ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
-
-        if(rootView.findViewById(R.id.right_container)!=null){
-            rootView.findViewById(R.id.backButton).setVisibility(View.INVISIBLE);
-        }
 
     }
 

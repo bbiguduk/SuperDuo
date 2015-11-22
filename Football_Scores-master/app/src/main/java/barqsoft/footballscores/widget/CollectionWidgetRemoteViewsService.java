@@ -11,6 +11,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import barqsoft.footballscores.DatabaseContract;
+import barqsoft.footballscores.R;
 
 /**
  * Created by Boram on 2015-11-10.
