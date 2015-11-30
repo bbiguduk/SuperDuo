@@ -49,4 +49,7 @@
     <string name="westbromwichalbion">West Bromwich Albion</string>
     <string name="sunderlandafc">Sunderland AFC</string>
     <string name="sokecityfc">Stoke City FC</string>
+
+    <string name="title_widget_today">Today Games</string>
+    <string name="title_widget_collection">Collection Games</string>
 </resources>

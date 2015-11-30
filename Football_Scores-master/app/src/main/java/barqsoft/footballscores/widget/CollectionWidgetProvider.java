@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import barqsoft.footballscores.MainActivity;
@@ -21,6 +22,7 @@ public class CollectionWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for(int appWidgetId : appWidgetIds) {
+            Log.i("Boram", "AppWidgetID: " + appWidgetId);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_collection);
 
             Intent intent = new Intent(context, MainActivity.class);
