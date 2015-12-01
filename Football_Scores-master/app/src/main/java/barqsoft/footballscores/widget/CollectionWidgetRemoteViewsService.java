@@ -11,6 +11,9 @@ import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import barqsoft.footballscores.DatabaseContract;
 import barqsoft.footballscores.R;
 import barqsoft.footballscores.Utilies;
@@ -58,19 +61,23 @@ public class CollectionWidgetRemoteViewsService extends RemoteViewsService {
                 if(data != null) {
                     data.close();
                 }
+
+                Date fragmentdate = new Date(System.currentTimeMillis());//+((i-2)*86400000));
+                SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+
                 final long identityToken = Binder.clearCallingIdentity();
                 Uri scoreForDateUri = DatabaseContract.scores_table.buildScoreWithDate();
                 data = getContentResolver().query(scoreForDateUri,
                         SOCCER_COLUMNS,
                         null,
-                        null,
+                        new String[]{mformat.format(fragmentdate)},
                         DatabaseContract.scores_table.DATE_COL + " ASC");
 
                 while(data.moveToNext()) {
                     Log.i("Boram", "Date: " + data.getString(INDEX_DATE));
                     Log.i("Boram", "Home: " + data.getString(INDEX_HOME));
                     Log.i("Boram", "Away: " + data.getString(INDEX_AWAY));
-                    Log.i("Boram", "Match Day: " + data.getString(INDEX_MATCH_DAY));
+                    Log.i("Boram", "Match Day: " + data.getString(INDEX_DATE));
                 }
                 Binder.restoreCallingIdentity(identityToken);
             }
@@ -102,7 +109,7 @@ public class CollectionWidgetRemoteViewsService extends RemoteViewsService {
                 double matchId = data.getDouble(INDEX_MATCH_ID);
                 String home = data.getString(INDEX_HOME);
                 String away = data.getString(INDEX_AWAY);
-                String date = data.getString(INDEX_MATCH_DAY);
+                String date = data.getString(INDEX_DATE);
                 String scores = Utilies.getScores(data.getInt(INDEX_HOME_GOALS),
                         data.getInt(INDEX_AWAY_GOALS));
                 int home_crest = Utilies.getTeamCrestByTeamName(
