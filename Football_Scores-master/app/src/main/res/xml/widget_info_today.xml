@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:initialLayout="@layout/widget_today"
     android:minHeight="@dimen/widget_collection_default_height"
-    android:minResizeHeight="@dimen/widget_collection_min_resize_height"
+    android:minResizeHeight="@dimen/widget_collection_min_height"
     android:minResizeWidth="@dimen/widget_collection_min_width"
     android:minWidth="@dimen/widget_collection_default_width"
     android:previewImage="@drawable/ic_launcher"
